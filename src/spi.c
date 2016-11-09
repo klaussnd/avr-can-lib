@@ -60,19 +60,28 @@
 	#error	SPI_PRESCALER not defined!
 #endif
 
+#ifdef USE_SOFTWARE_SPI
+uint8_t usi_interface_spi_temp;
+#endif
+
 
 // ----------------------------------------------------------------------------
 void mcp2515_spi_init(void)
 {
 	#ifndef USE_SOFTWARE_SPI
 		// Aktivieren des SPI Master Interfaces
+   #if defined(__AVR_ATtiny44__) || defined(__AVR_ATtiny84__)
+      USICR = (1<<USIWM0)|(1<<USICS1)|(1<<USICLK)|(1<<USITC);
+   #else
 		SPCR = (1<<SPE)|(1<<MSTR) | R_SPCR;
 		SPSR = R_SPSR;
-	#endif
+   #endif
+	#endif /* !USE_SOFTWARE_SPI */
 }
 
 // ----------------------------------------------------------------------------
 // Schreibt/liest ein Byte ueber den Hardware SPI Bus
+// \return gelesene Daten
 
 uint8_t spi_putc(uint8_t data)
 {
@@ -107,13 +116,9 @@ uint8_t spi_putc(uint8_t data)
 	#else
 	
 	// put byte in send-buffer
-	SPDR = data;
-	
-	// wait until byte was send
-	while( !( SPSR & (1<<SPIF) ) )
-		;
-	
-	return SPDR;
+        spi_start(data);
+        // wait until byte was send
+        return spi_wait();
 	
 	#endif
 }

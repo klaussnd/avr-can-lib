@@ -59,7 +59,7 @@ extern uint8_t spi_putc(uint8_t data);
 // ----------------------------------------------------------------------------
 #ifdef USE_SOFTWARE_SPI
 
-static uint8_t usi_interface_spi_temp;
+extern uint8_t usi_interface_spi_temp;
 
 extern __attribute__ ((gnu_inline)) inline void spi_start(uint8_t data) {
 	usi_interface_spi_temp = spi_putc(data);
@@ -71,18 +71,37 @@ extern __attribute__ ((gnu_inline)) inline uint8_t spi_wait(void) {
 
 #else
 
+/** Initiate SPI write transfer
+ *  \param data The data to transfer
+ */
 extern __attribute__ ((gnu_inline)) inline void spi_start(uint8_t data) {
+ #if defined(__AVR_ATtiny44__) || defined(__AVR_ATtiny84__)
+        USIDR = data; // Daten in Data Register laden
+        USISR |= (1<<USIOIF); // Überlaufflag löschen
+ #else
 	SPDR = data;
+ #endif
 }
 
+/** Wait for SPI to complete operation (all data transferred)
+ *  \return data received from SPI
+ */
 extern __attribute__ ((gnu_inline)) inline uint8_t spi_wait(void) {
 	// warten bis der vorherige Werte geschrieben wurde
+ #if defined(__AVR_ATtiny44__) || defined(__AVR_ATtiny84__)
+        while(!(USISR & (1<<USIOIF))) {
+                USICR  |=  (1<<USITC); // toggle clk
+        }
+
+        return USIDR;
+ #else
 	while(!(SPSR & (1<<SPIF)))
 		;
 	
 	return SPDR;
+ #endif
 }
 
-#endif
+#endif // !USE_SOFTWARE_SPI
 
 #endif	// SPI_H

@@ -30,35 +30,7 @@
 
 #include "mcp2515_private.h"
 #ifdef	SUPPORT_FOR_MCP2515__
-
-// ----------------------------------------------------------------------------
-#ifdef USE_SOFTWARE_SPI
-
-static uint8_t usi_interface_spi_temp;
-
-static void spi_start(uint8_t data) {
-	usi_interface_spi_temp = spi_putc(data);
-}
-
-static uint8_t spi_wait(void) {
-	return usi_interface_spi_temp;
-}
-
-#else
-
-static void spi_start(uint8_t data) {
-	SPDR = data;
-}
-
-static uint8_t spi_wait(void) {
-	// warten bis der vorherige Werte geschrieben wurde
-	while(!(SPSR & (1<<SPIF)))
-		;
-	
-	return SPDR;
-}
-
-#endif
+#include "spi.h"
 
 // ----------------------------------------------------------------------------
 /* Schreibt eine CAN ID in die Register des MCP2515
@@ -124,7 +96,7 @@ void mcp2515_write_id(const uint32_t *id, uint8_t extended)
 	}
 }
 
-#else
+#else // USE_EXTENDED_CANID
 
 void mcp2515_write_id(const uint16_t *id)
 {

@@ -51,7 +51,6 @@
 #include "utils.h"
 
 #include "can_private.h"
-#include "spi.h"
 
 // ----------------------------------------------------------------------------
 
@@ -81,13 +80,19 @@
 		#define	P_MOSI	B,0
 		#define	P_MISO	B,1
 		#define	P_SCK	B,2
-		
 		#define	USE_SOFTWARE_SPI		1
 		#define	SUPPORT_FOR_MCP2515__
+	#elif defined(__AVR_ATtiny44__) || defined(__AVR_ATtiny84__)
+                #define  P_MOSI	A,5
+                #define  P_MISO	A,6
+                #define  P_SCK	A,4
+		#define  SUPPORT_FOR_MCP2515__
 	#else
 		#error	choosen AVR-type is not supported yet!
 	#endif
 #endif
+
+#include "spi.h"
 
 
 #ifdef  SUPPORT_FOR_MCP2515__
