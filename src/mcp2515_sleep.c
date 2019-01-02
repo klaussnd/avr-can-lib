@@ -50,6 +50,13 @@ mcp2515_sleep(void)
 void
 mcp2515_wakeup(void)
 {
+	// "generate" a wakeup interrupt, if MCP2515 is in manual wakeup mode
+	mcp2515_bit_modify(CANINTF, (1 << WAKIF), (1 << WAKIF));
+	mcp2515_bit_modify(CANINTE, (1 << WAKIE), (1 << WAKIE));
+
+	// wait for "interrupt" to be ready
+	_delay_ms(1);
+
 	// reset int enable and cancel the interrupt flag
 	mcp2515_bit_modify(CANINTE, (1<<WAKIE), 0);
 	mcp2515_bit_modify(CANINTF, (1<<WAKIF), 0);
