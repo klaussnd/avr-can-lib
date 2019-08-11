@@ -196,6 +196,7 @@ typedef struct
 		uint16_t timestamp;
 	#endif
 } can_t;
+typedef can_t CanMessage; // alias
 
 
 
