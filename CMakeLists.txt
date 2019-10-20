@@ -43,16 +43,16 @@ add_avr_library(can
     ${CAN_SOURCE_PATHS}
 )
 avr_target_compile_definitions(can
-    PRIVATE
+    PUBLIC
         HAS_CAN_CONFIG_H=1
 )
 avr_target_include_directories(can
-    PRIVATE
-        ${CMAKE_SOURCE_DIR}
-        ${CMAKE_CURRENT_SOURCE_DIR}
+    PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR} # can.h
+        # The client has to add the directory which contains the can_config.h
 )
 
-# Add compiler flags:
+# The original Makefile adds the following compiler flags:
 # -funsigned-char
 # -funsigned-bitfields
 # -fpack-struct
