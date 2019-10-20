@@ -33,6 +33,7 @@
 
 #include "spi.h"
 
+#ifndef MCP2515_NO_SPI_INIT
 #ifdef	SPI_PRESCALER
 	#if (SPI_PRESCALER == 2) || (SPI_PRESCALER == 8) || (SPI_PRESCALER == 32) || (SPI_PRESCALER == 64)
 		#define	R_SPSR	(1<<SPI2X)
@@ -78,6 +79,7 @@ void mcp2515_spi_init(void)
    #endif
 	#endif /* !USE_SOFTWARE_SPI */
 }
+#endif // MCP2515_NO_SPI_INIT
 
 // ----------------------------------------------------------------------------
 // Schreibt/liest ein Byte ueber den Hardware SPI Bus

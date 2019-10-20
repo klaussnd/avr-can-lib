@@ -177,6 +177,7 @@ bool mcp2515_init(can_bitrate_t bitrate)
 	SET(MCP2515_CS);
 	SET_OUTPUT(MCP2515_CS);
 	
+#ifndef MCP2515_NO_SPI_INIT
 	// Aktivieren der Pins fuer das SPI Interface
 	RESET(P_SCK);
 	RESET(P_MOSI);
@@ -188,6 +189,7 @@ bool mcp2515_init(can_bitrate_t bitrate)
 	
 	// SPI Einstellung setzen
 	mcp2515_spi_init();
+#endif // MCP2515_NO_SPI_INIT
 	
 	// MCP2515 per Software Reset zuruecksetzten,
 	// danach ist er automatisch im Konfigurations Modus
